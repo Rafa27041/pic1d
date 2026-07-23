@@ -17,8 +17,6 @@ def solve_periodic(rho: np.ndarray, dx: float) -> np.ndarray:
   phi_k[1:] = rho_k[1:] / k[1:]**2
   phi = np.real(np.fft.ifft(phi_k))
   return np.append(phi, phi[0])
-   
-    raise NotImplementedError
 
 
 def solve_dirichlet(rho: np.ndarray, dx: float,
