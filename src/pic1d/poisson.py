@@ -9,17 +9,15 @@ import numpy as np
 
 
 def solve_periodic(rho: np.ndarray, dx: float) -> np.ndarray:
-    """FFT Poisson solve on a periodic domain.
-
-    Algorithm:
-    1. rho_k = fft(rho[:-1])  (drop duplicated end node)
-    2. phi_k = rho_k / k^2 for k != 0; phi_k[0] = 0
-       (zero-mean potential; the k=0 mode is gauge freedom, and the
-       run must be globally neutral or the solve is ill-posed)
-    3. phi = real(ifft(phi_k)); append phi[0] to restore end node.
-
-    Use k = 2*pi*fftfreq(n, d=dx). TODO (Week 1).
-    """
+  rho_inner = rho[:-1]
+  n = rho_inner.size
+  k = 2 * np.pi * np.fft.fftfreq(n, d=dx)
+  rho_k = np.fft.fft(rho_inner)
+  phi_k = np.zeros_like(rho_k)
+  phi_k[1:] = rho_k[1:] / k[1:]**2
+  phi = np.real(np.fft.ifft(phi_k))
+  return np.append(phi, phi[0])
+   
     raise NotImplementedError
 
 
