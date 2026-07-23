@@ -3,3 +3,5 @@ __pycache__/
 .pytest_cache/
 report/figures/*.png
 report/figures/*.gif
+venv/
+.DS_Store
