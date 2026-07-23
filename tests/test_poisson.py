@@ -15,7 +15,6 @@ def test_periodic_sinusoidal():
     assert np.max(np.abs(phi - np.sin(x))) < 1e-3
 
 
-@pytest.mark.skip(reason="TODO Week 1")
 def test_dirichlet_manufactured():
     """phi_exact = sin(pi x / L) with rho = (pi/L)^2 sin(pi x / L),
     phi(0) = phi(L) = 0. Second-order convergence: error ~ dx^2
