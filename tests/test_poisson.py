@@ -5,7 +5,6 @@ import pytest
 from pic1d import poisson
 
 
-@pytest.mark.skip(reason="TODO Week 1")
 def test_periodic_sinusoidal():
     """rho = sin(kx) => phi = sin(kx)/k^2. Max error < 1e-3 at n=256."""
     n, L = 256, 2 * np.pi
