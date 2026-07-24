@@ -16,7 +16,10 @@ def test_periodic_sinusoidal():
 
 
 def test_dirichlet_manufactured():
-    """phi_exact = sin(pi x / L) with rho = (pi/L)^2 sin(pi x / L),
-    phi(0) = phi(L) = 0. Second-order convergence: error ~ dx^2
-    (verify by running at two resolutions)."""
-    assert False
+    L, N = 1.0, 129
+    dx = L / (N - 1)
+    x = np.linspace(0, L, N)
+    phi_exact = np.sin(np.pi * x / L)
+    rho = (np.pi / L)**2 * np.sin(np.pi * x / L)
+    phi = poisson.solve_dirichlet(rho, dx, 0.0, 0.0)
+    assert np.max(np.abs(phi - phi_exact)) < 1e-4
