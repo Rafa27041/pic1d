@@ -18,18 +18,41 @@ def solve_periodic(rho: np.ndarray, dx: float) -> np.ndarray:
   phi = np.real(np.fft.ifft(phi_k))
   return np.append(phi, phi[0])
 
+def thomas(a, b, c, d):
+    """Solve a tridiagonal system. a=sub, b=diag, c=super, d=rhs."""
+    n = len(d)
+    cp = np.zeros(n)
+    dp = np.zeros(n)
 
+    cp[0] = c[0] / b[0]
+    dp[0] = d[0] / b[0]
+
+    for i in range(1, n):                        # forward sweep
+        m = b[i] - a[i] * cp[i-1]
+        cp[i] = c[i] / m
+        dp[i] = (d[i] - a[i] * dp[i-1]) / m
+
+    x = np.zeros(n)
+    x[-1] = dp[-1]
+    for i in range(n-2, -1, -1):                 # back substitution
+        x[i] = dp[i] - cp[i] * x[i+1]
+
+    return x
+  
 def solve_dirichlet(rho: np.ndarray, dx: float,
                     phi_left: float = 0.0, phi_right: float = 0.0) -> np.ndarray:
-    """Tridiagonal Poisson solve with fixed-potential walls.
+    n = rho.size - 2
+    a = np.ones(n)
+    b = -2.0 * np.ones(n)
+    c = np.ones(n)
+    d = -rho[1:-1] * dx**2
+    d[0]  -= phi_left
+    d[-1] -= phi_right
 
-    Discretization: (phi[i-1] - 2 phi[i] + phi[i+1]) / dx^2 = -rho[i]
-    for interior nodes; boundary values pinned.
+    x = thomas(a, b, c, d)
 
-    Use scipy.linalg.solve_banded or write the Thomas algorithm
-    directly (it is ~10 lines and worth doing once by hand).
-
-    TODO (Week 1). Unit test: manufactured solution, e.g.
-    phi_exact = sin(pi x / L) with corresponding rho.
-    """
-    raise NotImplementedError
+    phi = np.empty(rho.size)
+    phi[0], phi[-1] = phi_left, phi_right
+    phi[1:-1] = x
+    return phi
+    
