@@ -21,15 +21,20 @@ def solve_periodic(rho: np.ndarray, dx: float) -> np.ndarray:
 
 def solve_dirichlet(rho: np.ndarray, dx: float,
                     phi_left: float = 0.0, phi_right: float = 0.0) -> np.ndarray:
-    """Tridiagonal Poisson solve with fixed-potential walls.
+    n = rho.size - 2
+    a = np.ones(n)
+    b = -2.0 * np.ones(n)
+    c = np.ones(n)
+    d = -rho[1:-1] * dx**2
+    d[0]  -= phi_left
+    d[-1] -= phi_right
 
-    Discretization: (phi[i-1] - 2 phi[i] + phi[i+1]) / dx^2 = -rho[i]
-    for interior nodes; boundary values pinned.
+    # forward sweep  (your Thomas code here)
+    # back substitution  (your Thomas code here)
+    # result: x, length n
 
-    Use scipy.linalg.solve_banded or write the Thomas algorithm
-    directly (it is ~10 lines and worth doing once by hand).
-
-    TODO (Week 1). Unit test: manufactured solution, e.g.
-    phi_exact = sin(pi x / L) with corresponding rho.
-    """
-    raise NotImplementedError
+    phi = np.empty(rho.size)
+    phi[0], phi[-1] = phi_left, phi_right
+    phi[1:-1] = x
+    return phi
+    
