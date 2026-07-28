@@ -7,24 +7,18 @@ weighting; it must exactly conserve total charge (see unit test).
 import numpy as np
 
 
-def deposit_charge(grid, species_list, periodic: bool = True) -> None:
-    """Accumulate charge density on grid.rho from all species.
+def deposit_charge(grid, species_list, periodic=True):
+    grid.rho[:] = 0.0                       # clear from last step
 
-    Algorithm (vectorized, no Python loop over particles):
-    1. grid.rho[:] = 0
-    2. For each species:
-       - j = floor(x / dx)               (left node index)
-       - f = x / dx - j                  (fractional distance)
-       - np.add.at(rho, j,   q * w * (1 - f) / dx)
-       - np.add.at(rho, j+1, q * w * f / dx)
-    3. Periodic: fold node n-1 onto node 0 (they are the same point),
-       or use modular indexing.
-    4. Dirichlet/sheath: clamp end contributions; end nodes represent
-       half-cells, so divide their density by 2 (volume correction).
+    for sp in species_list:
+        j = np.floor(sp.x / grid.dx).astype(int)   # left node index
+        f = sp.x / grid.dx - j                      # fractional distance
 
-    np.add.at is required (not fancy-index +=) because multiple
-    particles hit the same node.
+        contrib = sp.charge * sp.weight / grid.dx
 
-    TODO (Week 1).
-    """
-    raise NotImplementedError
+        np.add.at(grid.rho, j,     contrib * (1.0 - f))   # to left node
+        np.add.at(grid.rho, j + 1, contrib * f)           # to right node
+
+    if periodic:
+        grid.rho[0]  += grid.rho[-1]        # last node == first node
+        grid.rho[-1]  = grid.rho[0]         # keep them equal
