@@ -28,12 +28,11 @@ class Grid:
         self.phi = np.zeros(n_nodes)
         self.efield = np.zeros(n_nodes)
 
-    def compute_efield_from_phi(self, periodic: bool = True) -> None:
-        """E = -d(phi)/dx via central differences.
-
-        TODO (Week 1):
-        - Interior nodes: E[i] = -(phi[i+1] - phi[i-1]) / (2 dx)
-        - Periodic: wrap the stencil at the ends.
-        - Dirichlet (sheath runs): one-sided differences at the walls.
-        """
-        raise NotImplementedError
+     def compute_efield_from_phi(self, periodic=True):
+        self.efield[1:-1] = -(self.phi[2:] - self.phi[:-2]) / (2 * self.dx)
+        if periodic:
+            self.efield[0]  = -(self.phi[1] - self.phi[-2]) / (2 * self.dx)
+            self.efield[-1] = self.efield[0]
+        else:
+            self.efield[0]  = -(self.phi[1] - self.phi[0]) / self.dx
+            self.efield[-1] = -(self.phi[-1] - self.phi[-2]) / self.dx
