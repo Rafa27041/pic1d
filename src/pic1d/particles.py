@@ -26,12 +26,11 @@ class Species:
     @classmethod
     def maxwellian(cls, name, charge, mass, n_particles, length,
                    v_thermal, drift=0.0, rng=None, weight=1.0):
-        """Uniform positions in [0, length], Maxwellian velocities.
-
-        TODO (Week 1): sample x ~ Uniform(0, L), v ~ Normal(drift, v_thermal).
-        Use rng = np.random.default_rng(seed) for reproducibility.
-        """
-        raise NotImplementedError
+        if rng is None:
+            rng = np.random.default_rng()
+        x = rng.uniform(0.0, length, size=n_particles)
+        v = rng.normal(drift, v_thermal, size=n_particles)
+        return cls(name, charge, mass, x, v, weight)
 
     def kinetic_energy(self) -> float:
         """Total kinetic energy: 0.5 * m * w * sum(v^2)."""
