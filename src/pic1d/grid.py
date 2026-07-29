@@ -28,7 +28,7 @@ class Grid:
         self.phi = np.zeros(n_nodes)
         self.efield = np.zeros(n_nodes)
 
-     def compute_efield_from_phi(self, periodic=True):
+    def compute_efield_from_phi(self, periodic=True):
         self.efield[1:-1] = -(self.phi[2:] - self.phi[:-2]) / (2 * self.dx)
         if periodic:
             self.efield[0]  = -(self.phi[1] - self.phi[-2]) / (2 * self.dx)
