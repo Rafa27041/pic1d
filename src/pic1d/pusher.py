@@ -14,24 +14,13 @@ back by dt/2 (v -= 0.5 * (q/m) * E * dt) so v and x are staggered.
 import numpy as np
 
 
-def gather_field(grid, x: np.ndarray) -> np.ndarray:
-    """Interpolate grid.efield to particle positions.
-
-    MUST use the same linear (CIC) weighting as deposition, otherwise
-    the scheme produces a self-force on isolated particles.
-
-    TODO (Week 1).
-    """
-    raise NotImplementedError
+def gather_field(grid, x):
+    j = np.floor(x / grid.dx).astype(int)
+    f = x / grid.dx - j
+    return grid.efield[j] * (1.0 - f) + grid.efield[j + 1] * f
 
 
-def push(species, grid, dt: float) -> None:
-    """One leapfrog step: update species.v then species.x in place.
-
-    TODO (Week 1):
-    1. E_p = gather_field(grid, species.x)
-    2. species.v += (species.charge / species.mass) * E_p * dt
-    3. species.x += species.v * dt
-    (Boundary handling lives in boundary.py, applied after the push.)
-    """
-    raise NotImplementedError
+def push(species, grid, dt):
+    E_p = gather_field(grid, species.x)
+    species.v += (species.charge / species.mass) * E_p * dt
+    species.x += species.v * dt
