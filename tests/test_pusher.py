@@ -9,6 +9,7 @@ import pytest
 from pic1d.grid import Grid
 from pic1d.particles import Species
 from pic1d import pusher
+from pic1d.pusher import gather_field, push
 
 
 def test_single_particle_energy_conservation():
